@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Без сладкого · челлендж</title>
+<meta name="description" content="Челлендж без сладкого: выбери срок, отмечай чистые дни.">
+<meta name="theme-color" content="#24713F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Без сладкого">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F3EC;
+  --ink:#1E2B23;
+  --ink-soft:#5C6B60;
+  --card:#FFFFFF;
+  --line:#E4E0D4;
+  --green:#2E8B4F;
+  --green-deep:#24713F;
+  --green-tint:#E2F0E5;
+  --slip:#C2452D;
+  --slip-tint:#F7E3DD;
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Manrope',-apple-system,sans-serif;
+  background:var(--bg);color:var(--ink);
+  min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.wrap{max-width:480px;margin:0 auto;padding:20px 18px 48px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px}
+.title{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.topright{display:flex;align-items:center;gap:8px}
+.daypill{font-size:13px;font-weight:700;color:var(--green-deep);background:var(--green-tint);
+  padding:5px 12px;border-radius:999px;white-space:nowrap}
+.linkbtn{background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;
+  color:var(--ink-soft);cursor:pointer;padding:6px 8px;border-radius:8px;touch-action:manipulation}
+.linkbtn:hover{background:#ECE8DD}
+
+/* settings panel */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.panel h3{font-size:15px;font-weight:800;margin-bottom:12px}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.frow label{font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+.frow input{font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);
+  border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;
+  min-height:44px;max-width:200px}
+#cfgTotal{width:84px;text-align:center}
+.fnote{font-size:12px;color:var(--ink-soft);margin-bottom:10px}
+.panel .actions{margin-top:10px}
+
+/* hero */
+.hero{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.streak{font-size:56px;font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.streak small{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);
+  margin-top:8px;line-height:1.35}
+.ringbox{margin-left:auto;position:relative;width:92px;height:92px;flex:none}
+.ringbox svg{transform:rotate(-90deg)}
+.ringbox .rv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:19px;font-variant-numeric:tabular-nums}
+.ringbox .rl{position:absolute;left:0;right:0;bottom:-2px;text-align:center;font-size:10px;
+  font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+
+/* progress */
+.prog{margin-bottom:18px}
+.bar{height:10px;background:#EAE6DA;border-radius:999px;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--green);border-radius:999px;
+  transition:width .5s cubic-bezier(.22,1,.36,1)}
+.ticks{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;font-weight:700;color:var(--ink-soft)}
+.ticks span.on{color:var(--green-deep)}
+
+/* calendar */
+.cal{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.calhead h2{font-size:16px;font-weight:800;text-transform:capitalize}
+.nav{width:44px;height:44px;border:1px solid var(--line);background:var(--bg);border-radius:10px;
+  font-size:18px;font-weight:700;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  touch-action:manipulation}
+.nav:disabled{opacity:.3;cursor:default}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.dow span{text-align:center;font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cell{aspect-ratio:1;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;position:relative;user-select:none;
+  -webkit-user-select:none;touch-action:manipulation;border:1px solid transparent}
+.cell.out{color:#C6C2B4}
+.cell.off{color:#B9B5A6;background:transparent}
+.cell.in{background:var(--bg);border-color:var(--line);cursor:pointer}
+.cell.in:hover{border-color:#B9C9BE}
+.cell.today{border:2px solid var(--ink)}
+.cell.clean{background:var(--green);border-color:var(--green);color:#fff}
+.cell.clean::after{content:"✓";font-size:9px;position:absolute;bottom:2px;right:4px;opacity:.9}
+.cell.slip{background:var(--slip-tint);border-color:var(--slip);color:var(--slip)}
+.cell.slip::after{content:"×";font-size:12px;font-weight:800;position:absolute;top:1px;right:5px}
+.cell.pressing{transform:scale(.9);background:#D8E8DC}
+.cell.pop{animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
+
+/* legend */
+.legend{display:flex;gap:16px;justify-content:center;margin:0 0 18px;font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.legend b{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px}
+.legend .c{background:var(--green)}
+.legend .s{background:var(--slip-tint);border:1.5px solid var(--slip)}
+
+/* actions */
+.actions{display:flex;gap:10px}
+.btn{flex:1;padding:14px;border-radius:12px;border:none;font-family:inherit;font-size:14px;font-weight:700;
+  cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:48px;touch-action:manipulation}
+.btn.primary{background:var(--green-deep);color:#fff}
+.btn.primary:active{background:#1d5a33}
+.btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
+.btn.ghost:active{background:#ECE8DD}
+
+.note{margin-top:18px;font-size:12.5px;line-height:1.6;color:var(--ink-soft);text-align:center}
+.note b{color:var(--ink)}
+
+@media (min-width:520px){
+  .wrap{padding-top:40px}
+}
+@media (prefers-reduced-motion:reduce){
+  .cell.pop{animation:none}
+  .bar i{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="title">Без сладкого</div>
+    <div class="topright">
+      <div class="daypill" id="daypill"></div>
+      <button class="linkbtn" id="settingsBtn">Настройки</button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel" hidden>
+    <h3>Челлендж</h3>
+    <div class="frow">
+      <label for="cfgStart">Дата старта</label>
+      <input type="date" id="cfgStart">
+    </div>
+    <div class="frow">
+      <label for="cfgTotal">Сколько дней</label>
+      <input type="number" id="cfgTotal" min="7" max="365" step="1">
+    </div>
+    <div class="fnote" id="cfgRange"></div>
+    <div class="actions">
+      <button class="btn primary" id="cfgSave">Сохранить</button>
+      <button class="btn ghost" id="cfgDefault">60 дней с 12 ноября</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="streak"><span id="streakNum">0</span><small>дней подряд<br>без сладкого</small></div>
+    <div class="ringbox">
+      <svg width="92" height="92" viewBox="0 0 92 92">
+        <circle cx="46" cy="46" r="38" fill="none" stroke="#EAE6DA" stroke-width="9"/>
+        <circle id="ring" cx="46" cy="46" r="38" fill="none" stroke="#2E8B4F" stroke-width="9"
+          stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76"
+          style="transition:stroke-dashoffset .6s cubic-bezier(.22,1,.36,1)"/>
+      </svg>
+      <div class="rv" id="ringNum"></div>
+      <div class="rl">всего</div>
+    </div>
+  </div>
+
+  <div class="prog">
+    <div class="bar"><i id="barfill"></i></div>
+    <div class="ticks" id="ticks"></div>
+  </div>
+
+  <div class="cal">
+    <div class="calhead">
+      <button class="nav" id="prevM">‹</button>
+      <h2 id="monthLabel"></h2>
+      <button class="nav" id="nextM">›</button>
+    </div>
+    <div class="dow"><span>пн</span><span>вт</span><span>ср</span><span>чт</span><span>пт</span><span>сб</span><span>вс</span></div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="legend">
+    <span><b class="c"></b>чистый день</span>
+    <span><b class="s"></b>срыв</span>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" id="icsBtn">Напоминания в календарь (.ics)</button>
+    <button class="btn ghost" id="exportBtn">Прогресс (.json)</button>
+    <button class="btn ghost" id="importBtn">Импорт</button>
+    <button class="btn ghost" id="resetBtn">Сбросить</button>
+  </div>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+
+  <p class="note">Тап по дню — <b>чистый</b>, зажать — <b>срыв</b>. Отмечать можно любой день срока, включая будущие.
+  Прогресс хранится в браузере; «Прогресс (.json)» — выгрузка на случай переноса. На iPhone: открыть в Safari и «Поделиться» → «На экран „Дом“».</p>
+</div>
+
+<script>
+const KEY_DAYS = 'nosugar.days';
+const KEY_CFG  = 'nosugar.cfg';
+const DEFAULT_CFG = { start: '2026-11-12', total: 60 };
+
+function loadCfg() {
+  try {
+    const c = JSON.parse(localStorage.getItem(KEY_CFG) || 'null');
+    if (c && c.start && c.total >= 7 && c.total <= 365) return c;
+  } catch(e) {}
+  return Object.assign({}, DEFAULT_CFG);
+}
+let cfg = loadCfg();
+const saveCfg = () => localStorage.setItem(KEY_CFG, JSON.stringify(cfg));
+
+let days = {};
+try { days = JSON.parse(localStorage.getItem(KEY_DAYS) || '{}'); } catch(e) {}
+const save = () => localStorage.setItem(KEY_DAYS, JSON.stringify(days));
+
+const key = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const parseKey = s => { const p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); };
+const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+const MONTHS_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const fmtRu = d => d.getDate() + ' ' + MONTHS_GEN[d.getMonth()];
+
+let START, TOTAL, END;
+function applyCfg() {
+  START = parseKey(cfg.start); START.setHours(0,0,0,0);
+  TOTAL = cfg.total;
+  END = new Date(START); END.setDate(END.getDate() + TOTAL - 1);
+}
+applyCfg();
+
+const today = new Date(); today.setHours(0,0,0,0);
+
+const isClean = d => days[key(d)] === 1;
+const isSlip  = d => days[key(d)] === 2;
+
+function streak() {
+  let d = new Date(today);
+  if (!isClean(d)) d.setDate(d.getDate() - 1);
+  let n = 0;
+  while (d >= START && isClean(d)) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+const cleanCount = () => Object.values(days).filter(v => v === 1).length;
+const dayNumber  = () => Math.min(TOTAL, Math.max(0, Math.floor((today - START) / 86400000) + 1));
+
+let view = new Date(today.getFullYear(), today.getMonth(), 1);
+const minView = new Date(START.getFullYear(), START.getMonth(), 1);
+const maxView = new Date(END.getFullYear(), END.getMonth(), 1);
+
+let suppressClick = false;
+
+function render() {
+  const dn = dayNumber();
+  document.getElementById('daypill').textContent =
+    dn < 1 ? 'старт ' + fmtRu(START) : dn > TOTAL ? 'финиш ' + fmtRu(END) : 'день ' + dn + ' из ' + TOTAL;
+
+  const s = streak(), c = cleanCount(), pct = Math.min(1, c / TOTAL);
+  document.getElementById('streakNum').textContent = s;
+  document.getElementById('ringNum').textContent = c + '/' + TOTAL;
+  document.getElementById('ring').style.strokeDashoffset = (238.76 * (1 - pct)).toFixed(1);
+  document.getElementById('barfill').style.width = (pct * 100).toFixed(1) + '%';
+
+  const t = document.getElementById('ticks');
+  t.innerHTML = '';
+  const ms = [...new Set([Math.round(TOTAL*0.25), Math.round(TOTAL*0.5), Math.round(TOTAL*0.75), TOTAL])].filter(n => n > 0);
+  ms.forEach(m => {
+    const sp = document.createElement('span');
+    sp.textContent = m;
+    if (c >= m) sp.className = 'on';
+    t.appendChild(sp);
+  });
+
+  const y = view.getFullYear(), mo = view.getMonth();
+  document.getElementById('monthLabel').textContent = MONTHS[mo] + ' ' + y;
+  document.getElementById('prevM').disabled = view <= minView;
+  document.getElementById('nextM').disabled = view >= maxView;
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const first = new Date(y, mo, 1);
+  const lead = (first.getDay() + 6) % 7;
+  const dim = new Date(y, mo + 1, 0).getDate();
+
+  for (let i = 0; i < lead; i++) {
+    const e = document.createElement('div'); e.className = 'cell off'; grid.appendChild(e);
+  }
+  for (let dd = 1; dd <= dim; dd++) {
+    const d = new Date(y, mo, dd);
+    const inRange = d >= START && d <= END;
+    const e = document.createElement('div');
+    e.className = 'cell ' + (inRange ? 'in' : 'out');
+    if (d.getTime() === today.getTime()) e.classList.add('today');
+    if (isClean(d)) e.classList.add('clean');
+    if (isSlip(d))  e.classList.add('slip');
+    e.textContent = dd;
+    if (inRange) {
+      const k = key(d);
+      let pressTimer = null;
+      e.addEventListener('pointerdown', () => {
+        e.classList.add('pressing');
+        pressTimer = setTimeout(() => {
+          pressTimer = null;
+          e.classList.remove('pressing');
+          days[k] = 2; save(); render();
+          suppressClick = true;
+          setTimeout(() => suppressClick = false, 400);
+        }, 450);
+      });
+      const endPress = () => {
+        e.classList.remove('pressing');
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+      };
+      e.addEventListener('pointerup', endPress);
+      e.addEventListener('pointercancel', endPress);
+      e.addEventListener('pointerleave', endPress);
+      e.addEventListener('click', ev => {
+        ev.preventDefault();
+        if (suppressClick) return;
+        if (days[k] === 1) delete days[k];
+        else days[k] = 1;
+        save(); render();
+      });
+    }
+    grid.appendChild(e);
+  }
+}
+
+document.getElementById('prevM').onclick = () => { view.setMonth(view.getMonth() - 1); render(); };
+document.getElementById('nextM').onclick = () => { view.setMonth(view.getMonth() + 1); render(); };
+
+document.getElementById('resetBtn').onclick = () => {
+  if (confirm('Сбросить все отметки? Это действие нельзя отменить.')) {
+    days = {}; save(); render();
+  }
+};
+
+// settings
+const panel = document.getElementById('panel');
+const cfgStart = document.getElementById('cfgStart');
+const cfgTotal = document.getElementById('cfgTotal');
+function fillCfgInputs() {
+  cfgStart.value = cfg.start;
+  cfgTotal.value = cfg.total;
+  const end = new Date(START); end.setDate(end.getDate() + TOTAL - 1);
+  document.getElementById('cfgRange').textContent =
+    'Итого: ' + TOTAL + ' дней, с ' + fmtRu(START) + ' по ' + fmtRu(end) + '.';
+}
+document.getElementById('settingsBtn').onclick = () => {
+  panel.hidden = !panel.hidden;
+  if (!panel.hidden) fillCfgInputs();
+};
+cfgStart.onchange = cfgTotal.oninput = fillCfgInputs;
+document.getElementById('cfgSave').onclick = () => {
+  const s = cfgStart.value;
+  const n = Math.round(+cfgTotal.value);
+  if (!s) { alert('Укажи дату старта.'); return; }
+  if (!n || n < 7 || n > 365) { alert('Дни: от 7 до 365.'); return; }
+  cfg = { start: s, total: n };
+  saveCfg();
+  location.reload();
+};
+document.getElementById('cfgDefault').onclick = () => {
+  cfg = Object.assign({}, DEFAULT_CFG);
+  saveCfg();
+  location.reload();
+};
+
+// progress export / import
+document.getElementById('exportBtn').onclick = () => {
+  const data = { days: days, cfg: cfg, savedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'no-sugar-progress.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+};
+const importFile = document.getElementById('importFile');
+document.getElementById('importBtn').onclick = () => importFile.click();
+importFile.onchange = () => {
+  const f = importFile.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (data && typeof data.days === 'object') {
+        Object.assign(days, data.days);
+        save();
+      }
+      if (data && data.cfg && data.cfg.start && data.cfg.total >= 7 && data.cfg.total <= 365) {
+        localStorage.setItem(KEY_CFG, JSON.stringify(data.cfg));
+        location.reload();
+        return;
+      }
+      render();
+    } catch(e) { alert('Не удалось прочитать файл прогресса.'); }
+  };
+  reader.readAsText(f);
+  importFile.value = '';
+};
+
+// ICS from current settings
+document.getElementById('icsBtn').onclick = () => {
+  const pad = n => String(n).padStart(2, '0');
+  const f = d => d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
+  const slug = cfg.start.replace(/-/g, '') + '-' + TOTAL + 'd';
+  let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Hermes//No Sugar//RU\r\nCALSCALE:GREGORIAN\r\n';
+  ics += 'BEGIN:VEVENT\r\nUID:nosugar-' + slug + '-start@hermes\r\nDTSTART:' + f(START) + 'T090000\r\n' +
+         'SUMMARY:Старт: ' + TOTAL + ' дней без сладкого\r\nDESCRIPTION:Начался челлендж. Сегодня первый день.\r\nEND:VEVENT\r\n';
+  for (let i = 0; i < TOTAL; i++) {
+    const d = new Date(START); d.setDate(d.getDate() + i);
+    ics += 'BEGIN:VEVENT\r\nUID:nosugar-' + slug + '-' + i + '@hermes\r\nDTSTART:' + f(d) + 'T210000\r\n' +
+           'DURATION:PT5M\r\nSUMMARY:Без сладкого: день ' + (i+1) + ' из ' + TOTAL + '\r\n' +
+           'DESCRIPTION:Сегодня день ' + (i+1) + ' челленджа. Сладкого не было? Отметь день в приложении.\r\nEND:VEVENT\r\n';
+  }
+  ics += 'BEGIN:VEVENT\r\nUID:nosugar-' + slug + '-finish@hermes\r\nDTSTART:' + f(END) + 'T090000\r\n' +
+         'SUMMARY:Финиш: ' + TOTAL + ' дней без сладкого\r\nDESCRIPTION:Челлендж завершён. Посмотри, сколько чистых дней получилось.\r\nEND:VEVENT\r\n';
+  ics += 'END:VCALENDAR';
+  const blob = new Blob([ics], {type:'text/calendar'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'no-sugar-' + TOTAL + '-days.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+};
+
+render();
+
+// service worker: cache the app so it runs offline after first load
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
