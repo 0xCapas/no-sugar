@@ -358,18 +358,27 @@ document.getElementById('resetBtn').onclick = () => {
 const panel = document.getElementById('panel');
 const cfgStart = document.getElementById('cfgStart');
 const cfgTotal = document.getElementById('cfgTotal');
+function updateRangeNote() {
+  const s = cfgStart.value, n = Math.round(+cfgTotal.value);
+  if (!s || !n || n < 7 || n > 365) {
+    document.getElementById('cfgRange').textContent = 'Дни: от 7 до 365.';
+    return;
+  }
+  const st = parseKey(s);
+  const end = new Date(st); end.setDate(end.getDate() + n - 1);
+  document.getElementById('cfgRange').textContent =
+    'Итого: ' + n + ' дней, с ' + fmtRu(st) + ' по ' + fmtRu(end) + '.';
+}
 function fillCfgInputs() {
   cfgStart.value = cfg.start;
   cfgTotal.value = cfg.total;
-  const end = new Date(START); end.setDate(end.getDate() + TOTAL - 1);
-  document.getElementById('cfgRange').textContent =
-    'Итого: ' + TOTAL + ' дней, с ' + fmtRu(START) + ' по ' + fmtRu(end) + '.';
+  updateRangeNote();
 }
 document.getElementById('settingsBtn').onclick = () => {
   panel.hidden = !panel.hidden;
   if (!panel.hidden) fillCfgInputs();
 };
-cfgStart.onchange = cfgTotal.oninput = fillCfgInputs;
+cfgStart.onchange = cfgTotal.oninput = updateRangeNote;
 function applySettings(start, total) {
   cfg = { start: start, total: total };
   saveCfg();
