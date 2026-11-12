@@ -13,14 +13,11 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#F6F3EC;
   --ink:#1E2B23;
-  --ink-soft:#5C6B60;
+  --ink-soft:#44524A;
   --card:#FFFFFF;
   --line:#E4E0D4;
   --green:#2E8B4F;
@@ -33,7 +30,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
-  font-family:'Manrope',-apple-system,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
   background:var(--bg);color:var(--ink);
   min-height:100vh;
   -webkit-tap-highlight-color:transparent;
@@ -45,9 +42,9 @@ body{
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px}
 .title{font-size:20px;font-weight:800;letter-spacing:-.02em}
 .topright{display:flex;align-items:center;gap:8px}
-.daypill{font-size:13px;font-weight:700;color:var(--green-deep);background:var(--green-tint);
+.daypill{font-size:14px;font-weight:700;color:var(--green-deep);background:var(--green-tint);
   padding:5px 12px;border-radius:999px;white-space:nowrap}
-.linkbtn{background:none;border:none;font-family:inherit;font-size:13px;font-weight:700;
+.linkbtn{background:none;border:none;font-family:inherit;font-size:14px;font-weight:700;
   color:var(--ink-soft);cursor:pointer;padding:6px 8px;border-radius:8px;touch-action:manipulation}
 .linkbtn:hover{background:#ECE8DD}
 
@@ -55,19 +52,19 @@ body{
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
 .panel h3{font-size:15px;font-weight:800;margin-bottom:12px}
 .frow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.frow label{font-size:13.5px;font-weight:600;color:var(--ink-soft)}
-.frow input{font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);
+.frow label{font-size:15px;font-weight:600;color:var(--ink)}
+.frow input{font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);
   border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;
   min-height:44px;max-width:200px}
 #cfgTotal{width:84px;text-align:center}
-.fnote{font-size:12px;color:var(--ink-soft);margin-bottom:10px}
+.fnote{font-size:13px;color:var(--ink-soft);margin-bottom:10px}
 .panel .actions{margin-top:10px}
 
 /* hero */
 .hero{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:18px;margin-bottom:14px}
 .streak{font-size:56px;font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.streak small{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);
+.streak small{display:block;font-size:15px;font-weight:600;color:var(--ink-soft);
   margin-top:8px;line-height:1.35}
 .ringbox{margin-left:auto;position:relative;width:92px;height:92px;flex:none}
 .ringbox svg{transform:rotate(-90deg)}
@@ -112,7 +109,7 @@ body{
 @keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
 
 /* legend */
-.legend{display:flex;gap:16px;justify-content:center;margin:0 0 18px;font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.legend{display:flex;gap:16px;justify-content:center;margin:0 0 18px;font-size:13.5px;font-weight:600;color:var(--ink-soft)}
 .legend b{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px}
 .legend .c{background:var(--green)}
 .legend .s{background:var(--slip-tint);border:1.5px solid var(--slip)}
@@ -127,7 +124,7 @@ body{
 .btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
 .btn.ghost:active{background:#ECE8DD}
 
-.note{margin-top:18px;font-size:12.5px;line-height:1.6;color:var(--ink-soft);text-align:center}
+.note{margin-top:18px;font-size:14px;line-height:1.6;color:var(--ink-soft);text-align:center}
 .note b{color:var(--ink)}
 
 @media (min-width:520px){
@@ -260,9 +257,15 @@ function streak() {
 const cleanCount = () => Object.values(days).filter(v => v === 1).length;
 const dayNumber  = () => Math.min(TOTAL, Math.max(0, Math.floor((today - START) / 86400000) + 1));
 
-let view = new Date(today.getFullYear(), today.getMonth(), 1);
-const minView = new Date(START.getFullYear(), START.getMonth(), 1);
-const maxView = new Date(END.getFullYear(), END.getMonth(), 1);
+let view, minView, maxView;
+function initView() {
+  view = new Date(today.getFullYear(), today.getMonth(), 1);
+  minView = new Date(START.getFullYear(), START.getMonth(), 1);
+  maxView = new Date(END.getFullYear(), END.getMonth(), 1);
+  if (view < minView) view = new Date(minView);
+  if (view > maxView) view = new Date(maxView);
+}
+initView();
 
 let suppressClick = false;
 
@@ -367,19 +370,23 @@ document.getElementById('settingsBtn').onclick = () => {
   if (!panel.hidden) fillCfgInputs();
 };
 cfgStart.onchange = cfgTotal.oninput = fillCfgInputs;
+function applySettings(start, total) {
+  cfg = { start: start, total: total };
+  saveCfg();
+  applyCfg();
+  initView();
+  render();
+  fillCfgInputs();
+}
 document.getElementById('cfgSave').onclick = () => {
   const s = cfgStart.value;
   const n = Math.round(+cfgTotal.value);
   if (!s) { alert('Укажи дату старта.'); return; }
   if (!n || n < 7 || n > 365) { alert('Дни: от 7 до 365.'); return; }
-  cfg = { start: s, total: n };
-  saveCfg();
-  location.reload();
+  applySettings(s, n);
 };
 document.getElementById('cfgDefault').onclick = () => {
-  cfg = Object.assign({}, DEFAULT_CFG);
-  saveCfg();
-  location.reload();
+  applySettings(DEFAULT_CFG.start, DEFAULT_CFG.total);
 };
 
 // progress export / import
