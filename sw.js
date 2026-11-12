@@ -1,4 +1,4 @@
-const CACHE = 'nosugar-v2';
+const CACHE = 'nosugar-v3';
 const SHELL = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', (e) => {

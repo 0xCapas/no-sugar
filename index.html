@@ -108,6 +108,12 @@ body{
 .cell.pop{animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
 @keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
 
+/* backup banner */
+.banner{background:var(--green-tint);border:1px solid #BFDCC6;border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:14px}
+.banner .bt{font-size:15px;font-weight:800;color:var(--green-deep);margin-bottom:4px}
+.banner .bb{font-size:13.5px;line-height:1.5;color:var(--ink)}
+
 /* legend */
 .legend{display:flex;gap:16px;justify-content:center;margin:0 0 18px;font-size:13.5px;font-weight:600;color:var(--ink-soft)}
 .legend b{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px}
@@ -192,6 +198,15 @@ body{
     <div class="grid" id="grid"></div>
   </div>
 
+  <div class="banner" id="backupBanner" hidden>
+    <div class="bt">Бэкап отметок</div>
+    <div class="bb">Прошло 7 дней с последнего бэкапа. Сохрани файл с отметками в «Файлы», чтобы ничего не потерять.</div>
+    <div class="actions" style="margin-top:10px">
+      <button class="btn primary" id="bkNow">Скачать бэкап</button>
+      <button class="btn ghost" id="bkLater">Позже</button>
+    </div>
+  </div>
+
   <div class="legend">
     <span><b class="c"></b>чистый день</span>
     <span><b class="s"></b>срыв</span>
@@ -270,6 +285,7 @@ initView();
 let suppressClick = false;
 
 function render() {
+  document.getElementById('backupBanner').hidden = !shouldShowBackup();
   const dn = dayNumber();
   document.getElementById('daypill').textContent =
     dn < 1 ? 'старт ' + fmtRu(START) : dn > TOTAL ? 'финиш ' + fmtRu(END) : 'день ' + dn + ' из ' + TOTAL;
@@ -399,7 +415,7 @@ document.getElementById('cfgDefault').onclick = () => {
 };
 
 // progress export / import
-document.getElementById('exportBtn').onclick = () => {
+function doExport() {
   const data = { days: days, cfg: cfg, savedAt: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
@@ -407,7 +423,27 @@ document.getElementById('exportBtn').onclick = () => {
   a.download = 'no-sugar-progress.json';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+const BK_LAST = 'nosugar.lastBackup';
+const BK_SNOOZE = 'nosugar.backupSnooze';
+document.getElementById('exportBtn').onclick = doExport;
+document.getElementById('bkNow').onclick = () => {
+  doExport();
+  localStorage.setItem(BK_LAST, key(today));
+  render();
 };
+document.getElementById('bkLater').onclick = () => {
+  localStorage.setItem(BK_SNOOZE, key(today));
+  render();
+};
+function shouldShowBackup() {
+  if (Object.keys(days).length < 3) return false;
+  if (localStorage.getItem(BK_SNOOZE) === key(today)) return false;
+  const last = localStorage.getItem(BK_LAST);
+  if (!last) return true;
+  const d = parseKey(last);
+  return Math.floor((today - d) / 86400000) >= 7;
+}
 const importFile = document.getElementById('importFile');
 document.getElementById('importBtn').onclick = () => importFile.click();
 importFile.onchange = () => {
